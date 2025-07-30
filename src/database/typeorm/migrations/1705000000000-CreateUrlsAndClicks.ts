@@ -8,7 +8,7 @@ export class CreateUrlsAndClicks1705000000000 implements MigrationInterface {
         columns: [
           {
             name: 'id',
-            type: 'int',
+            type: 'integer',
             isPrimary: true,
             isGenerated: true,
             generationStrategy: 'increment',
@@ -27,7 +27,7 @@ export class CreateUrlsAndClicks1705000000000 implements MigrationInterface {
           },
           {
             name: 'user_id',
-            type: 'int',
+            type: 'integer',
             isNullable: true,
           },
           {
@@ -46,6 +46,15 @@ export class CreateUrlsAndClicks1705000000000 implements MigrationInterface {
             isNullable: true,
           },
         ],
+        foreignKeys: [
+          {
+            name: 'fk_urls_user_id',
+            columnNames: ['user_id'],
+            referencedTableName: 'users',
+            referencedColumnNames: ['id'],
+            onDelete: 'SET NULL',
+          },
+        ],
       }),
       true,
     );
@@ -56,14 +65,14 @@ export class CreateUrlsAndClicks1705000000000 implements MigrationInterface {
         columns: [
           {
             name: 'id',
-            type: 'int',
+            type: 'integer',
             isPrimary: true,
             isGenerated: true,
             generationStrategy: 'increment',
           },
           {
             name: 'url_id',
-            type: 'int',
+            type: 'integer',
             isNullable: false,
           },
           {
@@ -88,25 +97,18 @@ export class CreateUrlsAndClicks1705000000000 implements MigrationInterface {
             default: 'CURRENT_TIMESTAMP',
           },
         ],
+        foreignKeys: [
+          {
+            name: 'fk_clicks_url_id',
+            columnNames: ['url_id'],
+            referencedTableName: 'urls',
+            referencedColumnNames: ['id'],
+            onDelete: 'CASCADE',
+          },
+        ],
       }),
       true,
     );
-
-    await queryRunner.query(`
-      ALTER TABLE urls 
-      ADD CONSTRAINT fk_urls_user_id 
-      FOREIGN KEY (user_id) 
-      REFERENCES users(id) 
-      ON DELETE SET NULL
-    `);
-
-    await queryRunner.query(`
-      ALTER TABLE clicks 
-      ADD CONSTRAINT fk_clicks_url_id 
-      FOREIGN KEY (url_id) 
-      REFERENCES urls(id) 
-      ON DELETE CASCADE
-    `);
 
     await queryRunner.query('CREATE INDEX idx_urls_short_code ON urls(short_code)');
     await queryRunner.query('CREATE INDEX idx_urls_user_id ON urls(user_id)');
@@ -117,9 +119,6 @@ export class CreateUrlsAndClicks1705000000000 implements MigrationInterface {
   }
 
   public async down(queryRunner: QueryRunner): Promise<void> {
-    await queryRunner.query('ALTER TABLE clicks DROP CONSTRAINT IF EXISTS fk_clicks_url_id');
-    await queryRunner.query('ALTER TABLE urls DROP CONSTRAINT IF EXISTS fk_urls_user_id');
-
     await queryRunner.dropTable('clicks');
     await queryRunner.dropTable('urls');
   }
