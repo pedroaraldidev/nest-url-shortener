@@ -28,12 +28,6 @@ lerna-debug.log*
 *.sqlite3
 *.db
 
-# Docker files (excluded from first commit)
-Dockerfile
-docker-compose*.yml
-.dockerignore
-docker/
-
 # IDE files
 .vscode/
 .idea/

@@ -1,0 +1,18 @@
+services:
+  app:
+    build:
+      context: .
+      dockerfile: dockerfile
+    environment:
+      - NODE_ENV=development
+      - DB_TYPE=${DB_TYPE:-sqlite}
+      - DB_HOST=${DB_HOST:-mysql}
+      - DB_PORT=${DB_PORT:-3306}
+      - DB_USERNAME=${DB_USERNAME:-nest_user}
+      - DB_PASSWORD=${DB_PASSWORD:-nest_password}
+      - DB_NAME=${DB_NAME:-url_shortener}
+      - JWT_SECRET=${JWT_SECRET:-dev-secret-key}
+    volumes:
+      - ./src:/app/src
+      - ./database.sqlite:/app/database.sqlite
+    command: sh -c "npm run start:dev" 

@@ -1,0 +1,47 @@
+services:
+  app:
+    build:
+      context: .
+      dockerfile: dockerfile
+    container_name: nest-url-shortener-mysql
+    networks:
+      - internal
+    ports:
+      - "3000:3000"
+    environment:
+      - NODE_ENV=production
+      - DB_TYPE=mysql
+      - DB_HOST=mysql
+      - DB_PORT=3306
+      - DB_USERNAME=nest_user
+      - DB_PASSWORD=nest_password
+      - DB_NAME=url_shortener
+      - JWT_SECRET=${JWT_SECRET:-your-secret-key}
+    depends_on:
+      - mysql
+    restart: always
+
+  mysql:
+    image: mysql:8.0
+    container_name: nest-mysql
+    networks:
+      - internal
+    environment:
+      - MYSQL_ROOT_PASSWORD=root_password
+      - MYSQL_DATABASE=url_shortener
+      - MYSQL_USER=nest_user
+      - MYSQL_PASSWORD=nest_password
+    ports:
+      - "3306:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+      - ./docker/mysql/init.sql:/docker-entrypoint-initdb.d/init.sql
+    command: --default-authentication-plugin=mysql_native_password
+    restart: always
+
+networks:
+  internal:
+    driver: bridge
+
+volumes:
+  mysql_data: 
