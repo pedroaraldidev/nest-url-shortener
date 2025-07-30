@@ -32,75 +32,47 @@ show_menu() {
     echo "1) Executar com SQLite (desenvolvimento)"
     echo "2) Executar com MySQL"
     echo "3) Executar com PostgreSQL"
-    echo "4) Executar todos os serviços (MySQL + PostgreSQL)"
-    echo "5) Parar todos os serviços"
-    echo "6) Ver logs"
-    echo "7) Limpar tudo (cuidado - apaga dados)"
-    echo "8) Sair"
+    echo "4) Ver logs"
+    echo "5) Sair"
     echo ""
 }
 
 # Função para executar com SQLite
 run_sqlite() {
     echo "🐳 Executando com SQLite..."
-    DB_TYPE=sqlite docker-compose up app
+    docker-compose -f docker-compose.sqlite.yml up --build
 }
 
 # Função para executar com MySQL
 run_mysql() {
     echo "🐳 Executando com MySQL..."
-    DB_TYPE=mysql docker-compose up
+    docker-compose -f docker-compose.mysql.yml up --build
 }
 
 # Função para executar com PostgreSQL
 run_postgres() {
     echo "🐳 Executando com PostgreSQL..."
-    DB_TYPE=postgres docker-compose up
-}
-
-# Função para executar todos
-run_all() {
-    echo "🐳 Executando todos os serviços..."
-    docker-compose up
-}
-
-# Função para parar serviços
-stop_services() {
-    echo "🛑 Parando serviços..."
-    docker-compose down
-    echo "✅ Serviços parados."
+    docker-compose -f docker-compose.postgres.yml up --build
 }
 
 # Função para ver logs
 show_logs() {
     echo "📋 Escolha o serviço para ver logs:"
-    echo "1) Aplicação"
-    echo "2) MySQL"
-    echo "3) PostgreSQL"
-    echo "4) Todos"
+    echo "1) Aplicação (SQLite)"
+    echo "2) Aplicação (MySQL)"
+    echo "3) Aplicação (PostgreSQL)"
+    echo "4) MySQL"
+    echo "5) PostgreSQL"
     read -p "Opção: " log_choice
     
     case $log_choice in
-        1) docker-compose logs -f app ;;
-        2) docker-compose logs -f mysql ;;
-        3) docker-compose logs -f postgres ;;
-        4) docker-compose logs -f ;;
+        1) docker-compose -f docker-compose.sqlite.yml logs -f app ;;
+        2) docker-compose -f docker-compose.mysql.yml logs -f app ;;
+        3) docker-compose -f docker-compose.postgres.yml logs -f app ;;
+        4) docker-compose -f docker-compose.mysql.yml logs -f mysql ;;
+        5) docker-compose -f docker-compose.postgres.yml logs -f postgres ;;
         *) echo "❌ Opção inválida" ;;
     esac
-}
-
-# Função para limpar tudo
-clean_all() {
-    echo "⚠️  ATENÇÃO: Isso vai apagar todos os dados!"
-    read -p "Tem certeza? (y/N): " confirm
-    if [[ $confirm == [yY] ]]; then
-        echo "🧹 Limpando tudo..."
-        docker-compose down -v
-        docker system prune -f
-        echo "✅ Limpeza concluída."
-    else
-        echo "❌ Operação cancelada."
-    fi
 }
 
 # Menu principal
@@ -112,11 +84,8 @@ while true; do
         1) run_sqlite ;;
         2) run_mysql ;;
         3) run_postgres ;;
-        4) run_all ;;
-        5) stop_services ;;
-        6) show_logs ;;
-        7) clean_all ;;
-        8) echo "👋 Até logo!"; exit 0 ;;
+        4) show_logs ;;
+        5) echo "👋 Até logo!"; exit 0 ;;
         *) echo "❌ Opção inválida" ;;
     esac
     
