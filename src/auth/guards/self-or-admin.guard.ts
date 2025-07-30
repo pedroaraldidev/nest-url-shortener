@@ -25,7 +25,7 @@ export class SelfOrAdminGuard implements CanActivate {
       throw new InsufficientPermissionsException('User not authenticated');
     }
 
-    if (user.user_type === 'admin' || user.id === userId) {
+    if (user.user_type === 'admin' || (user.sub || user.id) === userId) {
       return true;
     }
 
