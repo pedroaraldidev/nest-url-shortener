@@ -20,7 +20,7 @@ import { UserService } from './user.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { Public } from '../auth/decorators/public.decorator';
-import { Roles } from 'src/auth/decorators/roles.decorator';
+import { Roles } from '../auth/decorators/roles.decorator';
 import { RolesGuard } from '../auth/guards/roles.guard';
 import { SelfOrAdmin } from '../auth/decorators/self-or-admin.decorator';
 import { SelfOrAdminGuard } from '../auth/guards/self-or-admin.guard';
