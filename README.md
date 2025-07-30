@@ -3,6 +3,33 @@
 
 Sistema de encurtamento de URLs desenvolvido em **NestJS** com autenticação de usuários e contabilização de acessos.
 
+## 📋 Versões e Funcionalidades
+
+### v0.5.0 - Contabilização de Acessos (2025-07-29)
+- ✅ Sistema de tracking de clicks
+- ✅ Rastreamento de IP, User-Agent e Referer
+- ✅ Estatísticas de acesso por URL
+
+### v0.4.0 - Operações de Usuário (2025-07-29)
+- ✅ CRUD completo de URLs com autenticação
+- ✅ Gerenciamento de URLs por usuário
+- ✅ Sistema de propriedade de URLs
+
+### v0.3.0 - Encurtador Básico (2025-07-29)
+- ✅ Sistema básico de encurtamento
+- ✅ Geração de códigos curtos únicos
+- ✅ Redirecionamento de URLs
+
+### v0.2.0 - Suporte Docker (2025-07-29)
+- ✅ Suporte completo ao Docker com múltiplas configurações de banco
+- ✅ Configurações para MySQL, PostgreSQL e SQLite
+- ✅ Scripts de setup automatizado
+
+### v0.1.0 - Autenticação (2025-07-28)
+- ✅ Sistema de autenticação JWT
+- ✅ Guards de autorização
+- ✅ Controle de acesso por roles
+
 ## 🚀 Início Rápido
 
 ### Pré-requisitos
@@ -10,12 +37,35 @@ Sistema de encurtamento de URLs desenvolvido em **NestJS** com autenticação de
 - [Node.js](https://nodejs.org/) (versão 18 ou superior)
 - [npm](https://www.npmjs.com/) ou [yarn](https://yarnpkg.com/)
 - Banco de dados (MySQL, PostgreSQL ou SQLite)
+- [Docker](https://www.docker.com/) (opcional, para v0.2.0+)
 
 ### Instalação
 
+#### Opção 1: Docker (Recomendado - v0.2.0+)
+
 1. **Clone o repositório:**
 ```bash
-git clone <repository-url>
+git clone https://github.com/pedroaraldidev/nest-url-shortener.git
+cd nest-url-shortener
+```
+
+2. **Execute com Docker:**
+```bash
+# Para SQLite (desenvolvimento)
+docker-compose -f docker-compose.sqlite.yml up
+
+# Para MySQL
+docker-compose -f docker-compose.mysql.yml up
+
+# Para PostgreSQL
+docker-compose -f docker-compose.postgres.yml up
+```
+
+#### Opção 2: Instalação Local
+
+1. **Clone o repositório:**
+```bash
+git clone https://github.com/pedroaraldidev/nest-url-shortener.git
 cd nest-url-shortener
 ```
 
@@ -73,7 +123,6 @@ npm run start:dev
 
 ### Endpoints Públicos
 
-- `POST /auth/register` - Cadastro de usuários
 - `POST /auth/login` - Autenticação de usuários
 - `POST /url/shorten` - Encurtar URL (com ou sem autenticação)
 - `GET /:shortCode` - Redirecionamento para URL original
@@ -83,6 +132,14 @@ npm run start:dev
 - `GET /url/my-urls` - Listar URLs do usuário
 - `PUT /url/:id` - Atualizar URL encurtada
 - `DELETE /url/:id` - Excluir URL encurtada
+
+### Endpoints de Usuário (Admin)
+
+- `GET /user` - Listar todos os usuários (Admin)
+- `GET /user/:id` - Buscar usuário por ID
+- `POST /user` - Criar usuário
+- `PUT /user/:id` - Atualizar usuário
+- `DELETE /user/:id` - Excluir usuário
 
 ## 🗄️ Bancos de Dados Suportados
 
@@ -134,34 +191,66 @@ npm run seed
 
 ```
 src/
-├── auth/                 # Autenticação e autorização
+├── auth/                 # Autenticação e autorização (v0.1.0+)
 ├── user/                 # Gerenciamento de usuários
-├── url/                  # Lógica de encurtamento
+├── url/                  # Lógica de encurtamento e tracking (v0.3.0+)
 ├── common/               # Utilitários compartilhados
 │   ├── exceptions/       # Tratamento de erros
 │   ├── decorators/       # Decorators customizados
-│   └── guards/           # Guards de autenticação
+│   ├── guards/           # Guards de autenticação
+│   ├── middleware/       # Middleware de IP detection (v0.5.0+)
+│   └── interceptors/     # Interceptors de transformação
 ├── config/               # Configurações da aplicação
 ├── database/             # Configurações do banco
-└── main.ts              # Ponto de entrada
+└── main.ts               # Ponto de entrada
 ```
 
 ## 🔒 Segurança
 
-- Autenticação JWT
+- Autenticação JWT (v0.1.0+)
 - Validação de entrada com class-validator
 - Senhas criptografadas com bcrypt
 - Soft delete para exclusão lógica
+- Controle de acesso por roles
 - Rate limiting (a ser implementado)
+
+## 📊 Contabilização de Acessos (v0.5.0+)
+
+O sistema rastreia automaticamente:
+- **IP Address** - Endereço IP do visitante
+- **User-Agent** - Navegador e sistema operacional
+- **Referer** - Página de origem (quando disponível)
+- **Timestamp** - Data e hora do acesso
 
 ## 📚 Documentação da API
 
 A documentação completa da API está disponível através do Swagger UI em `/api` quando a aplicação estiver rodando.
 
-## 🚧 Próximos Passos
+## 🐳 Docker (v0.2.0+)
+
+### Configurações Disponíveis
+
+- **SQLite**: `docker-compose -f docker-compose.sqlite.yml up`
+- **MySQL**: `docker-compose -f docker-compose.mysql.yml up`
+- **PostgreSQL**: `docker-compose -f docker-compose.postgres.yml up`
+
+### Scripts de Setup
+
+- **Linux/Mac**: `./scripts/docker-setup.sh`
+- **Windows**: `.\scripts\docker-setup.ps1`
+
+## 💡 Dicas de Debug
+
+- Se encontrar erros de injeção de dependência, verifique se os módulos necessários estão importados
+- Para problemas de autenticação, verifique se o JWT_SECRET está configurado
+- Para problemas de banco, verifique as configurações de conexão no .env
+
+## 🛤️ Próximos Passos
 
 - [ ] Implementar rate limiting
 - [ ] Adicionar cache com Redis
 - [ ] Implementar observabilidade (logs, métricas, tracing)
 - [ ] Configurar CI/CD
 - [ ] Deploy em ambiente de produção
+- [ ] Dashboard de estatísticas
+- [ ] API de relatórios de acesso

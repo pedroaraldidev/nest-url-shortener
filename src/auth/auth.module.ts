@@ -12,6 +12,7 @@ import { UserModule } from '../user/user.module';
 import { LoginUseCase } from './use-cases/login.usecase';
 
 import { JwtAuthGuard } from './guards/jwt-auth.guard';
+import { OptionalJwtAuthGuard } from './guards/optional-jwt-auth.guard';
 
 @Module({
   imports: [
@@ -30,8 +31,9 @@ import { JwtAuthGuard } from './guards/jwt-auth.guard';
       provide: ITokenRepository,
       useClass: TokenTypeOrmRepository,
     },
-    JwtAuthGuard
+    JwtAuthGuard,
+    OptionalJwtAuthGuard
   ],
-  exports: [JwtModule, JwtAuthGuard],
+  exports: [JwtModule, JwtAuthGuard, OptionalJwtAuthGuard],
 })
 export class AuthModule {}
