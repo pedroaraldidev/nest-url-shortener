@@ -1,0 +1,15 @@
+services:
+  app:
+    build:
+      context: .
+      dockerfile: dockerfile
+    container_name: nest-url-shortener
+    ports:
+      - "3000:3000"
+    environment:
+      - NODE_ENV=production
+      - DB_TYPE=sqlite
+      - JWT_SECRET=${JWT_SECRET:-your-secret-key}
+    restart: always
+    volumes:
+      - ./database.sqlite:/app/database.sqlite 

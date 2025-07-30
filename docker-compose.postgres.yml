@@ -1,0 +1,45 @@
+services:
+  app:
+    build:
+      context: .
+      dockerfile: dockerfile
+    container_name: nest-url-shortener-postgres
+    networks:
+      - internal
+    ports:
+      - "3000:3000"
+    environment:
+      - NODE_ENV=production
+      - DB_TYPE=postgres
+      - DB_HOST=postgres
+      - DB_PORT=5432
+      - DB_USERNAME=nest_user
+      - DB_PASSWORD=nest_password
+      - DB_NAME=url_shortener
+      - JWT_SECRET=${JWT_SECRET:-your-secret-key}
+    depends_on:
+      - postgres
+    restart: always
+
+  postgres:
+    image: postgres:15
+    container_name: nest-postgres
+    networks:
+      - internal
+    environment:
+      - POSTGRES_DB=url_shortener
+      - POSTGRES_USER=nest_user
+      - POSTGRES_PASSWORD=nest_password
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./docker/postgres/init.sql:/docker-entrypoint-initdb.d/init.sql
+    restart: always
+
+networks:
+  internal:
+    driver: bridge
+
+volumes:
+  postgres_data: 
