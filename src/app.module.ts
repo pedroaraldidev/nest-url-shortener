@@ -1,29 +1,29 @@
-import { Module } from '@nestjs/common';
+import { Module, NestModule, MiddlewareConsumer } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { UserModule } from './user/user.module';
 import { AuthModule } from './auth/auth.module';
+import { UrlModule } from './url/url.module';
 import { SeedsModule } from './database/typeorm/seeds/seeds.module';
 import typeormConfig from './config/typeorm.config';
-import { JwtAuthGuard } from './auth/guards/jwt-auth.guard';
-import { APP_GUARD } from '@nestjs/core';
-
+import { IpDetectionMiddleware } from './common/middleware/ip-detection.middleware';
 
 @Module({
   imports: [
     TypeOrmModule.forRoot(typeormConfig),
     UserModule,
     AuthModule,
+    UrlModule,
     SeedsModule
   ],
   controllers: [AppController],
-  providers: [
-    AppService,
-    {
-      provide: APP_GUARD,
-      useClass: JwtAuthGuard,
-    },
-  ],
+  providers: [AppService],
 })
-export class AppModule {}
+export class AppModule implements NestModule {
+  configure(consumer: MiddlewareConsumer) {
+    consumer
+      .apply(IpDetectionMiddleware)
+      .forRoutes('*');
+  }
+}
